@@ -2,7 +2,8 @@
 
 # gulp-css-spriter-dookay
 
-`gulp-css-spriter-dookay`，雪碧图处理插件。基于`gulp-css-spriter`插件进行了改良，新增配置项`matchReg`,用于过滤是否需要合并的图片。
+`gulp-css-spriter-dookay`，雪碧图处理插件。基于`gulp-css-spriter`插件进行了改良，新增配置项`matchReg`,用于过滤是否需要合并的图片。  
+[上海稻壳网络科技有限公司](http://www.dookay.com)
 
 # Install
 
