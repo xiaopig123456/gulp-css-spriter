@@ -28,7 +28,7 @@ var transformMap = require('../lib/transform-map');
 
 
 // We use 'algorithm': 'top-down' because it easier to have a consistent packing so the expected doesn't have to be updated
-describe('gulp-css-spriter', function() {
+describe('gulp-css-spriter-dookay', function() {
 	it('should emit a buffer', function() {
 		var spriterPromise = spriterTest({}).then(function(result) {
 			return result.isBuffer();

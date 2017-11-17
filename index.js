@@ -1,4 +1,4 @@
-// gulp-css-spriter-dookay: https://www.npmjs.com/package/gulp-css-spriter-dookay
+// gulp-css-spriter: https://www.npmjs.com/package/gulp-css-spriter-dookay
 // Sprite Sheet Generation from CSS source files.
 //
 // By: Eric Eastwood: EricEastwood.com
@@ -44,12 +44,11 @@ var spriter = function(options) {
 		// we need a litle help identifying where it will be.
 		'pathToSpriteSheetFromCSS': 'spritesheet.png',
 
-    // 按照指定正则规则进行匹配，pattern为空表示匹配所有
-    "matchReg":{
+		// 按照指定正则规则进行匹配，pattern为空表示匹配所有
+		"matchReg":{
       pattern:null,
       attributes:"i"
-    },
-
+		},
 		// Same as the spritesmith callback `function(err, result)`
 		// result.image: Binary string representation of image
 		// result.coordinates: Object mapping filename to {x, y, width, height} of image
@@ -216,13 +215,13 @@ var spriter = function(options) {
 			var spriteSmithBuildPromise = spritesmithBuild(spritesmithOptions);
 
 			spriteSmithBuildPromise.then(function(result) {
-
         var count = 0;
         for(var i in result.coordinates){
           count++;
         }
 
 				var whenImageDealtWithPromise = new Promise(function(resolve, reject) {
+
 					// Save out the spritesheet image
 					if(settings.spriteSheet) {
 						var spriteSheetSavedPromise = outputFile(settings.spriteSheet, result.image, 'binary').then(function() {
@@ -263,17 +262,17 @@ var spriter = function(options) {
 							reject(err);
 						});
 
-            if(count > 0) {
-              spriteSheetSavedPromise.then(function () {
+            if(count > 0){
+              spriteSheetSavedPromise.then(function() {
 
                 // Call a callback from the settings the user can hook onto
-                if (settings.spriteSheetBuildCallback) {
+                if(settings.spriteSheetBuildCallback) {
                   settings.spriteSheetBuildCallback(null, result);
                 }
 
                 resolve();
               });
-            }
+						}
 
 					}
 					else {
