@@ -1,4 +1,4 @@
-// gulp-css-spriter: https://www.npmjs.com/package/gulp-css-spriter
+// gulp-css-spriter-dookay: https://www.npmjs.com/package/gulp-css-spriter-dookay
 // Sprite Sheet Generation from CSS source files.
 //
 // By: Eric Eastwood: EricEastwood.com
@@ -30,7 +30,7 @@ var transformFileWithSpriteSheetData = require('./lib/transform-file-with-sprite
 
 
 // consts
-const PLUGIN_NAME = 'gulp-css-spriter';
+const PLUGIN_NAME = 'gulp-css-spriter-dookay';
 
 
 var spriter = function(options) {
@@ -43,6 +43,13 @@ var spriter = function(options) {
 		// Because we don't know where you will end up saving the CSS file at this point in the pipe,
 		// we need a litle help identifying where it will be.
 		'pathToSpriteSheetFromCSS': 'spritesheet.png',
+
+    // 按照指定正则规则进行匹配，pattern为空表示匹配所有
+    "matchReg":{
+      pattern:null,
+      attributes:"i"
+    },
+
 		// Same as the spritesmith callback `function(err, result)`
 		// result.image: Binary string representation of image
 		// result.coordinates: Object mapping filename to {x, y, width, height} of image
@@ -63,6 +70,7 @@ var spriter = function(options) {
 	};
 
 	var settings = extend({}, defaults, options);
+  settings.matchReg = (settings.matchReg.pattern?new RegExp(settings.matchReg.pattern,settings.matchReg.attributes):null);
 
 	// Keep track of all the chunks that come in so that we can re-emit in the flush
 	var chunkList = [];
@@ -106,7 +114,7 @@ var spriter = function(options) {
 			}
 			
 			// Gather a list of all of the image declarations
-			var chunkBackgroundImageDeclarations = getBackgroundImageDeclarations(styles, settings.includeMode);
+			var chunkBackgroundImageDeclarations = getBackgroundImageDeclarations(styles, settings.includeMode,settings.matchReg);
 
 
 			// Go through each declaration and gather the image paths
@@ -209,6 +217,11 @@ var spriter = function(options) {
 
 			spriteSmithBuildPromise.then(function(result) {
 
+        var count = 0;
+        for(var i in result.coordinates){
+          count++;
+        }
+
 				var whenImageDealtWithPromise = new Promise(function(resolve, reject) {
 					// Save out the spritesheet image
 					if(settings.spriteSheet) {
@@ -222,7 +235,7 @@ var spriter = function(options) {
 								var transformedChunk = chunk.clone();
 
 								try {
-									transformedChunk = transformFileWithSpriteSheetData(transformedChunk, result.coordinates, settings.pathToSpriteSheetFromCSS, settings.includeMode, settings.silent, settings.outputIndent);
+									transformedChunk = transformFileWithSpriteSheetData(transformedChunk, result.coordinates, settings.pathToSpriteSheetFromCSS, settings.includeMode, settings.silent, settings.outputIndent, settings.matchReg);
 								}
 								catch(err) {
 									err.message = 'Something went wrong when transforming chunks: ' + err.message;
@@ -250,16 +263,18 @@ var spriter = function(options) {
 							reject(err);
 						});
 
+            if(count > 0) {
+              spriteSheetSavedPromise.then(function () {
 
-						spriteSheetSavedPromise.then(function() {
+                // Call a callback from the settings the user can hook onto
+                if (settings.spriteSheetBuildCallback) {
+                  settings.spriteSheetBuildCallback(null, result);
+                }
 
-							// Call a callback from the settings the user can hook onto
-							if(settings.spriteSheetBuildCallback) {
-								settings.spriteSheetBuildCallback(null, result);
-							}
+                resolve();
+              });
+            }
 
-							resolve();
-						});
 					}
 					else {
 						resolve();
